@@ -3,6 +3,8 @@
 
 """
 
+from collections import defaultdict
+
 class VendingMachine:
 
     default_coins = {
@@ -20,7 +22,8 @@ class VendingMachine:
     """
     def __init__(self, coins=default_coins):
         self.coins_accepted = coins
-
+        self.inserted_coins = []
+        self.register = defaultdict(int)
 
     """
     Attempt to insert a coin of NAME into the vending machine
@@ -28,4 +31,11 @@ class VendingMachine:
                  inserted into the vending machine
     """
     def accept_coin(self, coin):
-        return coin in self.coins_accepted.keys()
+        if coin in self.coins_accepted.keys():
+            self.inserted_coins.append(coin)
+            return True
+        else:
+            return False
+
+    def inserted_value(self):
+        return sum(self.coins_accepted[coin] for coin in self.inserted_coins)

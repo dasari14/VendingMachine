@@ -13,3 +13,8 @@ def test_vending_machine_accept_coin_nickle_returns_true(vending_machine):
 @pytest.mark.usefixtures('vending_machine')
 def test_vending_machine_accept_coin_coin_returns_false(vending_machine):
     assert vending_machine.accept_coin("coin") == False
+
+@pytest.mark.usefixtures('vending_machine')
+def test_vending_machine_accept_coin_nickle_adds_value(vending_machine):
+    vending_machine.accept_coin("nickle")
+    assert vending_machine.inserted_value() == 5
