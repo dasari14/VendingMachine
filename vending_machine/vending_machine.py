@@ -71,7 +71,14 @@ class VendingMachine:
         ))
 
     def select_product(self, button_number):
+        cost = self.products[button_number]['cost']
+        if self.inserted_value() < cost:
+            print "HERE"
+            self.display = 'PRICE $%.2f' % (cost / 100.0)
         return []
 
     def show_display(self):
-        return self.display
+        display = self.display
+        if self.display.startswith('PRICE'):
+            self.display = 'INSERT COINS'
+        return display

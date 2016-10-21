@@ -32,7 +32,13 @@ def test_vending_machine_purchase_chips_returns_nothing(vending_machine):
     chips_question_mark = vending_machine.select_product(button_to_press)
     assert chips_question_mark == []
 
-def test_vending_machine_display(vending_machine):
+def test_vending_machine_default_display(vending_machine):
+    assert vending_machine.show_display() == 'INSERT COINS'
+
+def test_vending_machine_display_purchase_chips_shows_price_then_insert_coin(vending_machine):
+    button_to_press = vending_machine.get_purchase_menu()['chips']
+    chips_question_mark = vending_machine.select_product(button_to_press)
+    assert vending_machine.show_display() == 'PRICE $0.50'
     assert vending_machine.show_display() == 'INSERT COINS'
 
 # def test_vending_machine_purchase_chips_returns_sold_out(vending_machine):
