@@ -39,3 +39,8 @@ class VendingMachine:
 
     def inserted_value(self):
         return sum(self.coins_accepted[coin] for coin in self.inserted_coins)
+
+    def return_coins(self):
+        coins_out = self.inserted_coins
+        self.inserted_coins = []
+        return coins_out
