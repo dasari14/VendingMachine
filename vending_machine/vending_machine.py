@@ -30,6 +30,7 @@ class VendingMachine:
         self.coins_accepted = coins
         self.products = products
 
+        self.display = 'INSERT COINS'
         self.inserted_coins = []
         self.register = defaultdict(int)
         self.inventory = defaultdict(int)
@@ -69,5 +70,8 @@ class VendingMachine:
             xrange(0, len(self.products))
         ))
 
-    def purchase(self, button_number):
+    def select_product(self, button_number):
         return []
+
+    def show_display(self):
+        return self.display
