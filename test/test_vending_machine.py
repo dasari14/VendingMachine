@@ -1,10 +1,23 @@
 import pytest
 from vending_machine.vending_machine import VendingMachine
 
+
+default_coins = {
+    'nickle': 5,
+    'dime': 10,
+    'quarter': 25
+}
+
+default_products = [
+    {'name': 'cola', 'cost': 100},
+    {'name': 'chips', 'cost': 50},
+    {'name': 'candy', 'cost': 65}
+]
+
 # Function scoped to be more explicit with test state
 @pytest.fixture(scope='function')
 def vending_machine():
-    vending_machine = VendingMachine()
+    vending_machine = VendingMachine(default_coins, default_products)
     return vending_machine
 
 def test_vending_machine_accept_coin_nickle_returns_true(vending_machine):
