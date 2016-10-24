@@ -44,7 +44,7 @@ class VendingMachine:
     def accept_coin(self, coin):
         if coin in self.coins_accepted.keys():
             self.inserted_coins.append(coin)
-            self.display = '$%0.2f' % (self._inserted_value() / 100.0)
+            self.display = '$%.2f' % (self._inserted_value() / 100.0)
             return True
         else:
             self.coin_return.append(coin)
@@ -57,17 +57,18 @@ class VendingMachine:
     def _inserted_value(self):
         return sum(self.coins_accepted[coin] for coin in self.inserted_coins)
 
-    '''
-    @return: A list of all coins that have been inserted so far
-    '''
+
     def return_coins(self):
         self.coin_return += self.inserted_coins
         self.inserted_coins = []
+        self.display = 'INSERT COIN'
+
 
     def empty_coin_return(self):
         coins_out = self.coin_return
         self.coin_return = []
         return coins_out
+
 
     '''
     @return: A dictionary mapping item name to button number
@@ -78,6 +79,7 @@ class VendingMachine:
             xrange(0, len(self.products))
         ))
 
+
     def select_product(self, button_number):
         product = self.products[button_number]
         if self._inserted_value() < product['cost']:
@@ -86,8 +88,12 @@ class VendingMachine:
             self.display = 'SOLD OUT'
         return []
 
+
     def show_display(self):
         display = self.display
         if self.display.startswith('PRICE'):
             self.display = 'INSERT COIN'
+        elif self.display.startswith('SOLD OUT'):
+            current_value = self._inserted_value()
+            self.display = '$%.2f' % (current_value / 100.0) if current_value else 'INSERT COIN'
         return display
