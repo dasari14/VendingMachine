@@ -93,3 +93,12 @@ def test_vending_machine_purchase_product_display_says_thank_you_then_reset(vend
     vending_machine.select_product(button_to_press)
     assert vending_machine.show_display() == 'THANK YOU'
     assert vending_machine.show_display() == 'INSERT COIN'
+
+def test_vending_machine_returns_product_and_decreases_inventory(vending_machine):
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    button_to_press = vending_machine.get_purchase_menu()['chips']
+    vending_machine._stock_vending_machine('chips', 1)
+    chips_question_mark = vending_machine.select_product(button_to_press)
+    assert chips_question_mark == ['chips']
+    assert vending_machine.inventory['chips'] == 0

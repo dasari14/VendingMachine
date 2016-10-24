@@ -32,7 +32,7 @@ class VendingMachine:
 
         self.display = 'INSERT COIN'
         self.inserted_coins = []
-        self.register = defaultdict(int)
+        self._register = defaultdict(int)
         self.inventory = defaultdict(int)
         for product in self.products:
             self._stock_vending_machine(product['name'], product['count'])
@@ -93,6 +93,8 @@ class VendingMachine:
             self.display = 'SOLD OUT'
         else:
             self.display = 'THANK YOU'
+            self.inventory[product['name']] -= 1
+            return [product['name']]
         return []
 
 
