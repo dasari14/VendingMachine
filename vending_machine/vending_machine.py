@@ -14,9 +14,9 @@ class VendingMachine:
     }
 
     default_products = [
-        {'name': 'cola', 'cost': 100},
-        {'name': 'chips', 'cost': 50},
-        {'name': 'candy', 'cost': 65}
+        {'name': 'cola', 'cost': 100, 'count': 0},
+        {'name': 'chips', 'cost': 50, 'count': 0},
+        {'name': 'candy', 'cost': 65, 'count': 0}
     ]
 
     '''
@@ -34,6 +34,9 @@ class VendingMachine:
         self.inserted_coins = []
         self.register = defaultdict(int)
         self.inventory = defaultdict(int)
+        for product in self.products:
+            self._stock_vending_machine(product['name'], product['count'])
+
         self.coin_return = []
 
     '''
@@ -57,6 +60,8 @@ class VendingMachine:
     def _inserted_value(self):
         return sum(self.coins_accepted[coin] for coin in self.inserted_coins)
 
+    def _stock_vending_machine(self, product_name, product_count):
+        self.inventory[product_name] += product_count
 
     def return_coins(self):
         self.coin_return += self.inserted_coins
@@ -86,6 +91,8 @@ class VendingMachine:
             self.display = 'PRICE $%.2f' % (product['cost'] / 100.0)
         elif self.inventory[product['name']] == 0:
             self.display = 'SOLD OUT'
+        else:
+            self.display = 'THANK YOU'
         return []
 
 
@@ -96,4 +103,6 @@ class VendingMachine:
         elif self.display.startswith('SOLD OUT'):
             current_value = self._inserted_value()
             self.display = '$%.2f' % (current_value / 100.0) if current_value else 'INSERT COIN'
+        elif self.display.startswith('THANK YOU'):
+            self.display = 'INSERT COIN'
         return display
