@@ -14,9 +14,9 @@ class VendingMachine:
     }
 
     default_products = [
-        {'name': 'cola', 'cost': 100, 'count': 0},
-        {'name': 'chips', 'cost': 50, 'count': 0},
-        {'name': 'candy', 'cost': 65, 'count': 0}
+        {'name': 'cola', 'cost': 100},
+        {'name': 'chips', 'cost': 50},
+        {'name': 'candy', 'cost': 65}
     ]
 
     '''
@@ -34,8 +34,6 @@ class VendingMachine:
         self.inserted_coins = []
         self._register = defaultdict(int)
         self.inventory = defaultdict(int)
-        for product in self.products:
-            self._stock_vending_machine(product['name'], product['count'])
 
         self.coin_return = []
 
@@ -87,7 +85,8 @@ class VendingMachine:
 
     def select_product(self, button_number):
         product = self.products[button_number]
-        if self._inserted_value() < product['cost']:
+        inserted_value = self._inserted_value()
+        if inserted_value < product['cost']:
             self.display = 'PRICE $%.2f' % (product['cost'] / 100.0)
         elif self.inventory[product['name']] == 0:
             self.display = 'SOLD OUT'
