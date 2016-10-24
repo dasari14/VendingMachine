@@ -34,6 +34,7 @@ class VendingMachine:
         self.inserted_coins = []
         self.register = defaultdict(int)
         self.inventory = defaultdict(int)
+        self.coin_return = []
 
     '''
     Attempt to insert a coin of NAME into the vending machine
@@ -43,24 +44,29 @@ class VendingMachine:
     def accept_coin(self, coin):
         if coin in self.coins_accepted.keys():
             self.inserted_coins.append(coin)
-            self.display = '$.2f' % (self.inserted_value() / 100.0)
+            self.display = '$%0.2f' % (self._inserted_value() / 100.0)
             return True
         else:
+            self.coin_return.append(coin)
             self.display = 'INSERT COIN'
             return False
 
     '''
     @return: The total value of inserted coins in cents
     '''
-    def inserted_value(self):
+    def _inserted_value(self):
         return sum(self.coins_accepted[coin] for coin in self.inserted_coins)
 
     '''
     @return: A list of all coins that have been inserted so far
     '''
     def return_coins(self):
-        coins_out = self.inserted_coins
+        self.coin_return += self.inserted_coins
         self.inserted_coins = []
+
+    def empty_coin_return(self):
+        coins_out = self.coin_return
+        self.coin_return = []
         return coins_out
 
     '''
@@ -73,13 +79,15 @@ class VendingMachine:
         ))
 
     def select_product(self, button_number):
-        cost = self.products[button_number]['cost']
-        if self.inserted_value() < cost:
-            self.display = 'PRICE $%.2f' % (cost / 100.0)
+        product = self.products[button_number]
+        if self._inserted_value() < product['cost']:
+            self.display = 'PRICE $%.2f' % (product['cost'] / 100.0)
+        elif self.inventory[product['name']] == 0:
+            self.display = 'SOLD OUT'
         return []
 
     def show_display(self):
         display = self.display
-        if self.display.startswith('PRICE') or self.display == 'THANK YOU':
+        if self.display.startswith('PRICE'):
             self.display = 'INSERT COIN'
         return display
