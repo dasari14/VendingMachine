@@ -7,18 +7,6 @@ from collections import defaultdict
 
 class VendingMachine:
 
-    default_coins = {
-        'nickle': 5,
-        'dime': 10,
-        'quarter': 25
-    }
-
-    default_products = [
-        {'name': 'cola', 'cost': 100},
-        {'name': 'chips', 'cost': 50},
-        {'name': 'candy', 'cost': 65}
-    ]
-
     '''
     Initialize this vending machine
 
@@ -26,7 +14,7 @@ class VendingMachine:
                   coins this vending machine will accept by name and their
                   associated values in cents.
     '''
-    def __init__(self, coins=default_coins, products=default_products):
+    def __init__(self, coins, products):
         self.coins_accepted = coins
         self.products = products
 
