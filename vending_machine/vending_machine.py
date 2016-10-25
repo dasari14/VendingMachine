@@ -2,7 +2,7 @@
 @author: Logan Jewett
 
 '''
-
+import sys
 from collections import defaultdict
 
 class VendingMachine:
@@ -10,33 +10,53 @@ class VendingMachine:
     '''
     Initialize this vending machine
 
-    @param coins: coins is a dictionary input of string to integer mappings of
-                  coins this vending machine will accept by name and their
-                  associated values in cents.
+    @param coins: coins is a list of dictionaries of coin_name to coin_value (in cents) mappings
+                  Optionally may include a coin_count parameter that indicates how many of that type
+                  of coin to insert. Defaults to 0
+                  e.g. [
+                           {'coin_name': 'quarter', 'coin_value': 25, 'coin_count': 10},
+                           {'coin_name': 'dime', 'coin_value': 10},
+                           {'coin_name': 'nickle', 'coin_value': 5}
+                       ]
+
+    @param products: products is a list of dictionaries of product_name to product_cost (in cents) mappings
+                     Optionally may include a product_count parameter that indicates how many of that type
+                     of product to insert. Defaults to 0
+                     e.g. [
+                              {'product_name': 'chips', 'product_cost': 100, 'product_count': 3},
+                              {'product_name': 'soda', 'product_cost': 50},
+                              {'product_name': 'candy', 'product_cost': 65}
+                          ]
     '''
     def __init__(self, coins, products):
-        self.coins_accepted = coins
-        self.products = products
+        self._coin_name_to_value_map = dict()
+        self._register = defaultdict(int) # Internal Coin Storage
 
-        self.display = 'INSERT COIN'
-        self.inserted_coins = []
-        self._register = defaultdict(int)
-        self.inventory = defaultdict(int)
+        for coin in coins:
+            self._add_accepted_coin(coin)
 
-        self.coin_return = []
+        self.inventory = products
+        for product in self.inventory:
+            if not product.has_key('product_count'):
+                product['product_count'] = 0
+
+        self.display = 'INSERT COIN' # Physical Display
+        self.inserted_coins = list() # P
+
+        self.coin_return = list() # Physical Coin Return
 
     '''
-    Attempt to insert a coin of NAME into the vending machine
+    Attempt to insert a coin of COIN_NAME into the vending machine
     @param coin: coin is a string input representation of a coin that's being
                  inserted into the vending machine
     '''
-    def accept_coin(self, coin):
-        if coin in self.coins_accepted.keys():
-            self.inserted_coins.append(coin)
+    def accept_coin(self, coin_name):
+        if self._check_coin_accepted(coin_name):
+            self.inserted_coins.append(coin_name)
             self.display = '$%.2f' % (self._inserted_value() / 100.0)
             return True
         else:
-            self.coin_return.append(coin)
+            self.coin_return.append(coin_name)
             self.display = 'INSERT COIN'
             return False
 
@@ -44,27 +64,44 @@ class VendingMachine:
     @return: The total value of inserted coins in cents
     '''
     def _inserted_value(self):
-        return sum(self.coins_accepted[coin] for coin in self.inserted_coins)
+        return sum(self._coin_name_to_value_map[coin] for coin in self.inserted_coins)
 
-    def _stock_vending_machine(self, product_name, product_count):
-        self.inventory[product_name] += product_count
+    def _stock_vending_machine(self, slot_number, product_count):
+        self.inventory[slot_number]['product_count'] = product_count
 
     def _refill_coin_register(self, coin_name, coin_count):
         self._register[coin_name] += coin_count
 
     def _get_coin_name(self, coin_value):
-        for name, value in dict.iteritems(self.coins_accepted):
+        for name, value in dict.iteritems(self._coin_name_to_value_map):
             if coin_value == value:
                 return name
+        return None
 
-    def _make_change(self, change):
-        minCoins = [0] * (change + 1)
-        coinsUsed = [0] * (change + 1)
-        for cents in range(change+1):
+    def _check_coin_accepted(self, coin_name):
+        return self._coin_name_to_value_map.has_key(coin_name)
+
+    def _add_accepted_coin(self, coin):
+        if not self._check_coin_accepted(coin['coin_name']) and\
+                self._get_coin_name(coin['coin_value']) == None:
+
+            self._coin_name_to_value_map[coin['coin_name']] = coin['coin_value']
+            self._register[coin['coin_name']] = coin.get('coin_count', 0)
+    # def _coins_available(self):
+    #     coins_available = []
+    #     for coin_name, coin_count in dict.iteritems(self._register):
+    #         if coin_count > 0:
+    #             coins_available.append(self._coin_name_to_value_map[coin_name])
+    #     return coins_available
+
+    def _make_change(self, change_to_make):
+        minCoins = [0] * (change_to_make + 1)
+        coinsUsed = [0] * (change_to_make + 1)
+        for cents in range(change_to_make + 1):
 
             coinCount = cents
             newCoin = 1
-            for j in [c for c in self.coins_accepted.values() if c <= cents]:
+            for j in [c for c in self._coin_name_to_value_map.values() if c <= cents]:
                 if minCoins[cents-j] + 1 < coinCount:
                     coinCount = minCoins[cents-j]+1
                     newCoin = j
@@ -72,10 +109,10 @@ class VendingMachine:
             coinsUsed[cents] = newCoin
 
         coins_returned = []
-        coin = change
-        while coin > 0:
-            thisCoin = coinsUsed[coin]
-            coin = coin - thisCoin
+        change_left_to_make = change_to_make
+        while change_left_to_make > 0:
+            thisCoin = coinsUsed[change_left_to_make]
+            change_left_to_make -= thisCoin
             coins_returned.append(self._get_coin_name(thisCoin))
         return coins_returned
 
@@ -97,25 +134,25 @@ class VendingMachine:
     '''
     def get_purchase_menu(self):
         return dict(zip(
-            [product['name'] for product in self.products],
-            xrange(0, len(self.products))
+            [product['product_name'] for product in self.inventory],
+            xrange(0, len(self.inventory))
         ))
 
 
     def select_product(self, button_number):
-        product = self.products[button_number]
+        product = self.inventory[button_number]
         inserted_value = self._inserted_value()
-        if inserted_value < product['cost']:
-            self.display = 'PRICE $%.2f' % (product['cost'] / 100.0)
-        elif self.inventory[product['name']] == 0:
+        if inserted_value < product['product_cost']:
+            self.display = 'PRICE $%.2f' % (product['product_cost'] / 100.0)
+        elif product['product_count'] == 0:
             self.display = 'SOLD OUT'
         else:
             self.display = 'THANK YOU'
-            self.inventory[product['name']] -= 1
-            change = self._make_change(inserted_value - product['cost'])
+            product['product_count'] -= 1
+            change = self._make_change(inserted_value - product['product_cost'])
             self.coin_return = change
             self.inserted_value = []
-            return [product['name']]
+            return [product['product_name']]
         return []
 
 

@@ -1,17 +1,22 @@
+'''
+@author: Logan Jewett
+
+'''
+
 import pytest
 from vending_machine.vending_machine import VendingMachine
 
 
-default_coins = {
-    'nickle': 5,
-    'dime': 10,
-    'quarter': 25
-}
+default_coins = [
+    {'coin_name': 'nickle', 'coin_value': 5},
+    {'coin_name': 'dime', 'coin_value': 10},
+    {'coin_name': 'quarter', 'coin_value': 25}
+]
 
 default_products = [
-    {'name': 'cola', 'cost': 100},
-    {'name': 'chips', 'cost': 50},
-    {'name': 'candy', 'cost': 65}
+    {'product_name': 'cola', 'product_cost': 100},
+    {'product_name': 'chips', 'product_cost': 50},
+    {'product_name': 'candy', 'product_cost': 65}
 ]
 
 # Function scoped to be more explicit with test state
@@ -95,14 +100,15 @@ def test_vending_machine_return_coins_sets_display_to_insert_coin(vending_machin
     assert vending_machine.show_display() == 'INSERT COIN'
 
 def test_stock_vending_machine_adds_products(vending_machine):
-    vending_machine._stock_vending_machine('chips', 1)
-    assert vending_machine.inventory['chips'] == 1
+    slot_number = vending_machine.get_purchase_menu()['chips']
+    vending_machine._stock_vending_machine(slot_number, 1)
+    assert vending_machine.inventory[slot_number]['product_count'] == 1
 
 def test_vending_machine_purchase_product_display_says_thank_you_then_reset(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_purchase_menu()['chips']
-    vending_machine._stock_vending_machine('chips', 1)
+    vending_machine._stock_vending_machine(button_to_press, 1)
     vending_machine.select_product(button_to_press)
     assert vending_machine.show_display() == 'THANK YOU'
     assert vending_machine.show_display() == 'INSERT COIN'
@@ -111,17 +117,17 @@ def test_vending_machine_returns_product_and_decreases_inventory(vending_machine
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_purchase_menu()['chips']
-    vending_machine._stock_vending_machine('chips', 1)
+    vending_machine._stock_vending_machine(button_to_press, 1)
     chips_question_mark = vending_machine.select_product(button_to_press)
     assert chips_question_mark == ['chips']
-    assert vending_machine.inventory['chips'] == 0
+    assert vending_machine.inventory[button_to_press]['product_count'] == 0
 
 def test_vending_machine_purchase_product_returns_change(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_purchase_menu()['candy']
-    vending_machine._stock_vending_machine('candy', 1)
+    vending_machine._stock_vending_machine(button_to_press, 1)
     vending_machine._refill_coin_register('dime', 100)
     vending_machine.select_product(button_to_press)
     print vending_machine.coin_return
