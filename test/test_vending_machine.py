@@ -115,3 +115,14 @@ def test_vending_machine_returns_product_and_decreases_inventory(vending_machine
     chips_question_mark = vending_machine.select_product(button_to_press)
     assert chips_question_mark == ['chips']
     assert vending_machine.inventory['chips'] == 0
+
+def test_vending_machine_purchase_product_returns_change(vending_machine):
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    button_to_press = vending_machine.get_purchase_menu()['candy']
+    vending_machine._stock_vending_machine('candy', 1)
+    vending_machine._refill_coin_register('dime', 100)
+    vending_machine.select_product(button_to_press)
+    print vending_machine.coin_return
+    assert vending_machine.empty_coin_return() == ['dime']

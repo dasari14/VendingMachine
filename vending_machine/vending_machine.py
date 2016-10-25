@@ -49,6 +49,37 @@ class VendingMachine:
     def _stock_vending_machine(self, product_name, product_count):
         self.inventory[product_name] += product_count
 
+    def _refill_coin_register(self, coin_name, coin_count):
+        self._register[coin_name] += coin_count
+
+    def _get_coin_name(self, coin_value):
+        for name, value in dict.iteritems(self.coins_accepted):
+            if coin_value == value:
+                return name
+
+    def _make_change(self, change):
+        minCoins = [0] * (change + 1)
+        coinsUsed = [0] * (change + 1)
+        for cents in range(change+1):
+
+            coinCount = cents
+            newCoin = 1
+            for j in [c for c in self.coins_accepted.values() if c <= cents]:
+                if minCoins[cents-j] + 1 < coinCount:
+                    coinCount = minCoins[cents-j]+1
+                    newCoin = j
+            minCoins[cents] = coinCount
+            coinsUsed[cents] = newCoin
+
+        coins_returned = []
+        coin = change
+        while coin > 0:
+            thisCoin = coinsUsed[coin]
+            coin = coin - thisCoin
+            coins_returned.append(self._get_coin_name(thisCoin))
+        return coins_returned
+
+
     def return_coins(self):
         self.coin_return += self.inserted_coins
         self.inserted_coins = []
@@ -81,6 +112,9 @@ class VendingMachine:
         else:
             self.display = 'THANK YOU'
             self.inventory[product['name']] -= 1
+            change = self._make_change(inserted_value - product['cost'])
+            self.coin_return = change
+            self.inserted_value = []
             return [product['name']]
         return []
 
