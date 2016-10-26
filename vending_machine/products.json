@@ -1,0 +1,5 @@
+[
+    {"product_name": "cola", "product_cost": 100},
+    {"product_name": "chips", "product_cost": 50, "product_count": 10},
+    {"product_name": "candy", "product_cost": 65, "product_count": 10}
+]

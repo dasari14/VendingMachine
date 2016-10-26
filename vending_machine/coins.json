@@ -1,0 +1,5 @@
+[
+    {"coin_name": "nickel", "coin_value": 5, "coin_count": 10},
+    {"coin_name": "dime", "coin_value": 10, "coin_count": 10},
+    {"coin_name": "quarter", "coin_value": 25, "coin_count": 10}
+]
