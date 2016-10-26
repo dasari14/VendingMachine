@@ -25,38 +25,38 @@ def vending_machine():
     vending_machine = VendingMachine(default_coins, default_products)
     return vending_machine
 
-def test_vending_machine_accept_coin_nickle_returns_true(vending_machine):
+def test_accept_coin_nickle_returns_true(vending_machine):
         assert vending_machine.accept_coin('nickle') == True
 
-def test_vending_machine_accept_coin_coin_returns_false(vending_machine):
+def test_accept_coin_coin_returns_false(vending_machine):
     assert vending_machine.accept_coin('coin') == False
 
-def test_vending_machine_accept_coin_nickle_adds_value(vending_machine):
+def test_accept_coin_nickle_adds_value(vending_machine):
     vending_machine.accept_coin('nickle')
     assert vending_machine._inserted_value() == 5
 
-def test_vending_machine_return_coins(vending_machine):
+def test_return_coins(vending_machine):
     vending_machine.accept_coin('nickle')
     vending_machine.return_coins()
     coins = vending_machine.empty_coin_return()
     assert coins == ['nickle']
     assert vending_machine._inserted_value() == 0
 
-def test_vending_machine_purchase_chips_returns_nothing(vending_machine):
+def test_purchase_chips_returns_nothing(vending_machine):
     button_to_press = vending_machine.get_product_button('chips')
     chips_question_mark = vending_machine.select_product(button_to_press)
     assert chips_question_mark == []
 
-def test_vending_machine_default_display(vending_machine):
+def test_default_display(vending_machine):
     assert vending_machine.show_display() == 'INSERT COIN'
 
-def test_vending_machine_display_purchase_chips_shows_price_then_insert_coin(vending_machine):
+def test_display_purchase_chips_shows_price_then_insert_coin(vending_machine):
     button_to_press = vending_machine.get_product_button('chips')
     chips_question_mark = vending_machine.select_product(button_to_press)
     assert vending_machine.show_display() == 'PRICE $0.50'
     assert vending_machine.show_display() == 'INSERT COIN'
 
-def test_vending_machine_purchase_chips_returns_sold_out(vending_machine):
+def test_purchase_chips_returns_sold_out(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_product_button('chips')
@@ -64,15 +64,15 @@ def test_vending_machine_purchase_chips_returns_sold_out(vending_machine):
     assert chips_question_mark == []
     assert vending_machine.show_display() == 'SOLD OUT'
 
-def test_vending_machine_accept_coin_changes_display_to_inserted_value(vending_machine):
+def test_accept_coin_changes_display_to_inserted_value(vending_machine):
     vending_machine.accept_coin('quarter')
     assert vending_machine.show_display() == '$0.25'
 
-def test_vending_machine_reject_coin_goes_to_coin_return(vending_machine):
+def test_reject_coin_goes_to_coin_return(vending_machine):
     vending_machine.accept_coin('coin')
     assert vending_machine.empty_coin_return() == ['coin']
 
-def test_vending_machine_sold_out_display_goes_to_inserted_value(vending_machine):
+def test_sold_out_display_goes_to_inserted_value(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_product_button('chips')
@@ -80,7 +80,7 @@ def test_vending_machine_sold_out_display_goes_to_inserted_value(vending_machine
     vending_machine.show_display()
     assert vending_machine.show_display() == '$0.50'
 
-def test_vending_machine_sold_out_display_no_money_goes_to_insert_coin(vending_machine):
+def test_sold_out_display_no_money_goes_to_insert_coin(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_product_button('chips')
@@ -89,7 +89,7 @@ def test_vending_machine_sold_out_display_no_money_goes_to_insert_coin(vending_m
     vending_machine.show_display()
     assert vending_machine.show_display() == 'INSERT COIN'
 
-def test_vending_machine_return_coins_sets_display_to_insert_coin(vending_machine):
+def test_return_coins_sets_display_to_insert_coin(vending_machine):
     vending_machine.accept_coin('quarter')
     assert vending_machine.show_display() == '$0.25'
     vending_machine.return_coins()
@@ -100,7 +100,7 @@ def test_stock_vending_machine_adds_products(vending_machine):
     vending_machine._stock_vending_machine(slot_number, 1)
     assert vending_machine.inventory[slot_number]['product_count'] == 1
 
-def test_vending_machine_purchase_product_display_says_thank_you_then_reset(vending_machine):
+def test_purchase_product_display_says_thank_you_then_reset(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_product_button('chips')
@@ -109,7 +109,7 @@ def test_vending_machine_purchase_product_display_says_thank_you_then_reset(vend
     assert vending_machine.show_display() == 'THANK YOU'
     assert vending_machine.show_display() == 'INSERT COIN'
 
-def test_vending_machine_returns_product_and_decreases_inventory(vending_machine):
+def test_returns_product_and_decreases_inventory(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_product_button('chips')
@@ -118,7 +118,7 @@ def test_vending_machine_returns_product_and_decreases_inventory(vending_machine
     assert chips_question_mark == ['chips']
     assert vending_machine.inventory[button_to_press]['product_count'] == 0
 
-def test_vending_machine_purchase_product_returns_change(vending_machine):
+def test_purchase_product_returns_change(vending_machine):
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
     vending_machine.accept_coin('quarter')
@@ -127,11 +127,11 @@ def test_vending_machine_purchase_product_returns_change(vending_machine):
     vending_machine.select_product(button_to_press)
     assert vending_machine.empty_coin_return() == ['dime']
 
-def test_vending_machine_get_product_button_no_product_returns_neg_one(vending_machine):
+def test_get_product_button_no_product_returns_neg_one(vending_machine):
     button_to_press = vending_machine.get_product_button('cheese')
     assert button_to_press == -1
 
-def test_vending_machine_get_product_button_returns_candy_position(vending_machine):
+def test_get_product_button_returns_candy_position(vending_machine):
     button_to_press = vending_machine.get_product_button('candy')
 
     # 0: cola
@@ -139,7 +139,7 @@ def test_vending_machine_get_product_button_returns_candy_position(vending_machi
     # 2: candy
     assert button_to_press == 2
 
-def test_vending_machine_stock_new_product(vending_machine):
+def test_stock_new_product(vending_machine):
     vending_machine._stock_vending_machine(
         4,
         {'product_name': 'cheese', 'product_cost': 150, 'product_count': 1}
@@ -148,7 +148,7 @@ def test_vending_machine_stock_new_product(vending_machine):
     button_to_press = vending_machine.get_product_button('cheese')
     assert button_to_press == 4
 
-def test_vending_machine_get_product_button_returns_candy_slot(vending_machine):
+def test_get_product_button_returns_candy_slot(vending_machine):
 
     vending_machine._stock_vending_machine(
         4,
@@ -164,6 +164,22 @@ def test_vending_machine_get_product_button_returns_candy_slot(vending_machine):
     candy_location = vending_machine.get_product_button('candy')
     assert candy_location == 4
 
-def test_vending_machine_default_message_no_coins_exact_change_only(vending_machine):
+def test_default_message_no_coins_exact_change_only(vending_machine):
     vending_machine._refill_coin_register('dime', -1)
     assert vending_machine.show_display() == 'EXACT CHANGE ONLY'
+
+def test_default_message_switch_when_coin_added(vending_machine):
+    vending_machine._refill_coin_register('dime', -1)
+    assert vending_machine.show_display() == 'EXACT CHANGE ONLY'
+    vending_machine._refill_coin_register('dime', 1)
+    assert vending_machine.show_display() == 'INSERT COIN'
+
+def test_purchasing_products_and_making_change_changes_coins_in_register(vending_machine):
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    button_to_press = vending_machine.get_product_button('candy')
+    vending_machine._stock_vending_machine(button_to_press, 1)
+    vending_machine.select_product(button_to_press)
+    assert vending_machine._register['dime'] == 0
+    assert vending_machine._register['quarter'] == 3

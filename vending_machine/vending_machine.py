@@ -123,6 +123,8 @@ class VendingMachine:
     @return: a list of coin_names to return in order to meet the needed amount of change
     '''
     def _make_change(self, change_to_make):
+
+        # identify change options
         min_coins = [0] * (change_to_make + 1)
         coins_used = [0] * (change_to_make + 1)
         for cents in range(change_to_make + 1):
@@ -136,6 +138,7 @@ class VendingMachine:
             min_coins[cents] = coin_count
             coins_used[cents] = new_coin
 
+        # identify what's available
         coins_returned = list()
         change_left_to_make = change_to_make
         coins_available = self._register
@@ -143,6 +146,11 @@ class VendingMachine:
             this_coin = coins_used[change_left_to_make]
             change_left_to_make -= this_coin
             coins_returned.append(self._get_coin_name(this_coin))
+
+        # subtract coins from register
+        for coin_name in coins_returned:
+            self._register[coin_name] -= 1
+
         return coins_returned
 
 
@@ -188,7 +196,8 @@ class VendingMachine:
             product['product_count'] -= 1
             change = self._make_change(inserted_value - product['product_cost'])
             self.coin_return = change
-            self.inserted_value = []
+            while self.inserted_coins: self._register[self.inserted_coins.pop()] += 1
+
             return [product['product_name']]
         return list()
 
