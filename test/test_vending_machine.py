@@ -8,7 +8,7 @@ from vending_machine.vending_machine import VendingMachine
 
 
 default_coins = [
-    {'coin_name': 'nickle', 'coin_value': 5, 'coin_count': 0},
+    {'coin_name': 'nickel', 'coin_value': 5, 'coin_count': 0},
     {'coin_name': 'dime', 'coin_value': 10, 'coin_count': 1},
     {'coin_name': 'quarter', 'coin_value': 25, 'coin_count': 0}
 ]
@@ -25,21 +25,21 @@ def vending_machine():
     vending_machine = VendingMachine(default_coins, default_products)
     return vending_machine
 
-def test_accept_coin_nickle_returns_true(vending_machine):
-        assert vending_machine.accept_coin('nickle') == True
+def test_accept_coin_nickel_returns_true(vending_machine):
+        assert vending_machine.accept_coin('nickel') == True
 
 def test_accept_coin_coin_returns_false(vending_machine):
     assert vending_machine.accept_coin('coin') == False
 
-def test_accept_coin_nickle_adds_value(vending_machine):
-    vending_machine.accept_coin('nickle')
+def test_accept_coin_nickel_adds_value(vending_machine):
+    vending_machine.accept_coin('nickel')
     assert vending_machine._inserted_value() == 5
 
 def test_return_coins(vending_machine):
-    vending_machine.accept_coin('nickle')
+    vending_machine.accept_coin('nickel')
     vending_machine.return_coins()
     coins = vending_machine.empty_coin_return()
-    assert coins == ['nickle']
+    assert coins == ['nickel']
     assert vending_machine._inserted_value() == 0
 
 def test_purchase_chips_returns_nothing(vending_machine):
@@ -183,3 +183,36 @@ def test_purchasing_products_and_making_change_changes_coins_in_register(vending
     vending_machine.select_product(button_to_press)
     assert vending_machine._register['dime'] == 0
     assert vending_machine._register['quarter'] == 3
+
+def test_make_change_returns_sub_optimal_change(vending_machine):
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    button_to_press = vending_machine.get_product_button('candy')
+    vending_machine._stock_vending_machine(button_to_press, 1)
+    vending_machine._refill_coin_register('dime', -1)
+    vending_machine._refill_coin_register('nickel', 2)
+    vending_machine.select_product(button_to_press)
+    assert vending_machine.empty_coin_return().count('nickel') == 2
+
+def test_unable_to_make_change(vending_machine):
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    button_to_press = vending_machine.get_product_button('candy')
+    vending_machine._stock_vending_machine(button_to_press, 1)
+    vending_machine._refill_coin_register('dime', -1)
+    vending_machine.select_product(button_to_press)
+    assert vending_machine.show_display() == 'UNABLE TO MAKE CHANGE'
+
+def test_unable_to_make_change_with_some_coins_still_available(vending_machine):
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    vending_machine.accept_coin('quarter')
+    button_to_press = vending_machine.get_product_button('candy')
+    vending_machine._stock_vending_machine(button_to_press, 1)
+    vending_machine._refill_coin_register('dime', -1)
+    vending_machine._refill_coin_register('quarter', 1)
+    vending_machine._refill_coin_register('nickel', 1)
+    vending_machine.select_product(button_to_press)
+    assert vending_machine.show_display() == 'UNABLE TO MAKE CHANGE'

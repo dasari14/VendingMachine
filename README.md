@@ -38,6 +38,7 @@ This is a list of assumptions that were made about the functioning of this vendi
 * No two coins have the same value or name
 * The ability to store coins and products is arbitrarily large
 * Inserted coins are added to the register after a successful purchase
+* All larger coins can be made with a combination of smaller coins
 * EXACT CHANGE ONLY is displayed when the register is completely empty, and instead...
 * ###### A NEW DISPLAY MESSAGE WAS ADDED, "UNABLE TO MAKE CHANGE", which displays when:
  * Inserted value exceeds vending machine's ability to make change for a selected product

@@ -3,6 +3,7 @@
 
 '''
 from collections import defaultdict
+from copy import deepcopy
 
 class VendingMachine:
 
@@ -109,12 +110,6 @@ class VendingMachine:
             self._coin_name_to_value_map[coin['coin_name']] = coin['coin_value']
             self._register[coin['coin_name']] = coin.get('coin_count', 0)
 
-    # def _coins_available(self):
-    #     coins_available = []
-    #     for coin_name, coin_count in dict.iteritems(self._register):
-    #         if coin_count > 0:
-    #             coins_available.append(self._coin_name_to_value_map[coin_name])
-    #     return coins_available
 
     '''
     Adaptation of a well known iterative algorithm for making change
@@ -128,7 +123,6 @@ class VendingMachine:
         min_coins = [0] * (change_to_make + 1)
         coins_used = [0] * (change_to_make + 1)
         for cents in range(change_to_make + 1):
-
             coin_count = cents
             new_coin = 1
             for coin in [c for c in self._coin_name_to_value_map.values() if c <= cents]:
@@ -138,14 +132,23 @@ class VendingMachine:
             min_coins[cents] = coin_count
             coins_used[cents] = new_coin
 
-        # identify what's available
+        # attempt to identify what change is possible
         coins_returned = list()
         change_left_to_make = change_to_make
-        coins_available = self._register
+        coins_available = deepcopy(self._register)
         while change_left_to_make > 0:
-            this_coin = coins_used[change_left_to_make]
-            change_left_to_make -= this_coin
-            coins_returned.append(self._get_coin_name(this_coin))
+            best_coin_value = coins_used[change_left_to_make]
+            coin_options = [
+                (cn, cv) for cn, cv in dict.iteritems(self._coin_name_to_value_map)\
+                if cv <= best_coin_value and coins_available[cn] > 0
+            ]
+
+            if not coin_options: return None
+            coin_name, coin_value = max(coin_options, key=lambda x: x[1])
+
+            change_left_to_make -= coin_value
+            coins_available[coin_name] -= 1
+            coins_returned.append(coin_name)
 
         # subtract coins from register
         for coin_name in coins_returned:
@@ -185,16 +188,20 @@ class VendingMachine:
     '''
     def select_product(self, button_number):
         product = self.inventory[button_number]
-        print self.inventory
         inserted_value = self._inserted_value()
         if inserted_value < product['product_cost']:
             self.display = 'PRICE $%.2f' % (product['product_cost'] / 100.0)
         elif product['product_count'] == 0:
             self.display = 'SOLD OUT'
         else:
+
+            change = self._make_change(inserted_value - product['product_cost'])
+            if change == None:
+                self.display = 'UNABLE TO MAKE CHANGE'
+                return list()
+
             self.display = 'THANK YOU'
             product['product_count'] -= 1
-            change = self._make_change(inserted_value - product['product_cost'])
             self.coin_return = change
             while self.inserted_coins: self._register[self.inserted_coins.pop()] += 1
 
