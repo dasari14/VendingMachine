@@ -8,9 +8,9 @@ from vending_machine.vending_machine import VendingMachine
 
 
 default_coins = [
-    {'coin_name': 'nickle', 'coin_value': 5},
-    {'coin_name': 'dime', 'coin_value': 10},
-    {'coin_name': 'quarter', 'coin_value': 25}
+    {'coin_name': 'nickle', 'coin_value': 5, 'coin_count': 0},
+    {'coin_name': 'dime', 'coin_value': 10, 'coin_count': 1},
+    {'coin_name': 'quarter', 'coin_value': 25, 'coin_count': 0}
 ]
 
 default_products = [
@@ -124,7 +124,6 @@ def test_vending_machine_purchase_product_returns_change(vending_machine):
     vending_machine.accept_coin('quarter')
     button_to_press = vending_machine.get_product_button('candy')
     vending_machine._stock_vending_machine(button_to_press, 1)
-    vending_machine._refill_coin_register('dime', 100)
     vending_machine.select_product(button_to_press)
     assert vending_machine.empty_coin_return() == ['dime']
 
@@ -164,3 +163,7 @@ def test_vending_machine_get_product_button_returns_candy_slot(vending_machine):
 
     candy_location = vending_machine.get_product_button('candy')
     assert candy_location == 4
+
+def test_vending_machine_default_message_no_coins_exact_change_only(vending_machine):
+    vending_machine._refill_coin_register('dime', -1)
+    assert vending_machine.show_display() == 'EXACT CHANGE ONLY'

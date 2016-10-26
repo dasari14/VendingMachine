@@ -41,7 +41,8 @@ class VendingMachine:
             if not product.has_key('product_count'):
                 product['product_count'] = 0
 
-        self.display = 'INSERT COIN' # Physical Display
+        self.default_display = 'INSERT COIN'
+        self.display = self.default_display # Physical Display
         self.inserted_coins = list()
 
         self.coin_return = list() # Physical Coin Return
@@ -60,7 +61,7 @@ class VendingMachine:
             return True
         else:
             self.coin_return.append(coin_name)
-            self.display = 'INSERT COIN'
+            self.display = self.default_display
             return False
 
 
@@ -148,7 +149,7 @@ class VendingMachine:
     def return_coins(self):
         self.coin_return += self.inserted_coins
         self.inserted_coins = []
-        self.display = 'INSERT COIN'
+        self.display = self.default_display
 
 
     def empty_coin_return(self):
@@ -191,14 +192,27 @@ class VendingMachine:
             return [product['product_name']]
         return list()
 
+    '''
+    Helper method to deal with the instances of when EXACT CHANGE ONLY and
+    INSERT COIN need to be displayed and switch between the two
+    '''
+    def _default_display_check(self):
+        if sum(self._register.values()) == 0 and self.default_display == 'INSERT COIN':
+            self.default_display = 'EXACT CHANGE ONLY'
+            if self.display == 'INSERT COIN': self.display = 'EXACT CHANGE ONLY'
+        elif sum(self._register.values()) > 0 and self.default_display == 'EXACT CHANGE ONLY':
+            self.default_display = 'INSERT COIN'
+            if self.display == 'EXACT CHANGE ONLY': self.display = 'INSERT COIN'
 
     def show_display(self):
+        self._default_display_check()
+
         display = self.display
         if self.display.startswith('PRICE'):
-            self.display = 'INSERT COIN'
-        elif self.display.startswith('SOLD OUT'):
+            self.display = self.default_display
+        elif self.display == 'SOLD OUT':
             current_value = self._inserted_value()
-            self.display = '$%.2f' % (current_value / 100.0) if current_value else 'INSERT COIN'
-        elif self.display.startswith('THANK YOU'):
-            self.display = 'INSERT COIN'
+            self.display = '$%.2f' % (current_value / 100.0) if current_value else self.default_display
+        elif self.display == 'THANK YOU':
+            self.display = self.default_display
         return display
