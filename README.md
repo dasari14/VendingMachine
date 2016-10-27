@@ -22,9 +22,9 @@ To maintain work environment purity, a virtual environment is recommended. I rec
 |   |   |-- __init__.py
 |   |   |-- coins.json
 |   |   |-- products.json
-|   |   |-- run_vending_machine.py
 |   |   `-- vending_machine.py   
 |   |
+|   |-- run_vending_machine.py
 |   |-- README.md
 |   |-- requirements.txt
 |   `-- .gitignore
@@ -80,6 +80,7 @@ List of Commands:
         > select [slot_number] -> attempt to purchase product of given slot
         > return -> push coin return button
         > empty -> empty all coins in coin return
+        > menu -> display the vending machine product menu
         > help -> print this message
         > exit -> exit vending machine program
 ```

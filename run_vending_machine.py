@@ -69,6 +69,7 @@ def main():
         > select [slot_number] -> attempt to purchase product of given slot
         > return -> push coin return button
         > empty -> empty all coins in coin return
+        > menu -> display the vending machine product menu
         > help -> print this message
         > exit -> exit vending machine program
         """
