@@ -125,3 +125,4 @@ This is a list of assumptions that were made about the functioning of this vendi
 * A NEW DISPLAY MESSAGE WAS ADDED, "UNABLE TO MAKE CHANGE", which displays when:
  * Inserted value exceeds vending machine's ability to make change for a selected product
 # vendingmachine
+# vendingmachine
