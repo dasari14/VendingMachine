@@ -271,7 +271,7 @@ class VendingMachine(object):
         display = self.display
         if self.display.startswith('PRICE'):
             self.display = self.default_display
-        elif self.display == 'SOLD OUT':
+        elif self.display == 'out of stock':
             current_value = self._inserted_value()
             self.display = '$%.2f' % (current_value / 100.0) if\
                 current_value else self.default_display

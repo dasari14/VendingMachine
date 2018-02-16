@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-@author: Logan Jewett
+
 
 '''
 
