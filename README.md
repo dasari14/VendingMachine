@@ -126,3 +126,4 @@ This is a list of assumptions that were made about the functioning of this vendi
  * Inserted value exceeds vending machine's ability to make change for a selected product
 # vendingmachine
 # vendingmachine
+# vendingmachine
